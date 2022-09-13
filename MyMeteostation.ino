@@ -22,8 +22,8 @@ unsigned long getDataTimer; //переменная для часов
 unsigned long lcdRefTimer; //переменная для часов
 unsigned long getPressTimer; //переменная для таймера записи значений датчиков давления и температуры
 boolean lcdShowSensor[sensorsCount];  //показ значений датчиков
-//byte tempAvgData[16];  //график значений датчика температуры
-word pressData[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};  //график значений датчика температуры
+byte tempAvgData[16] {0};  //значения для графика датчика температуры
+word pressData[16] {0};  //значения для графика датчика температуры
 byte screenMode; //текущий режим экрана
 
 void GetMeteoData() { //опрос датчиков
@@ -79,11 +79,31 @@ void GetMeteoData() { //опрос датчиков
     //    }
 
     for (byte i = 0; i < 16; i++) {
-      if (i != 15)pressData[i] = pressData[i + 1];
-      if (i == 15)pressData[i] = round(p180 * 0.750063755419211);
-      Serial.print(pressData[i]);
+      if (i != 15) {
+        tempAvgData[i] = tempAvgData[i + 1];
+        pressData[i] = pressData[i + 1];
+      }
+      if (i == 15) {
+        tempAvgData[i] = round((t22 + t180) * 0.5);
+        pressData[i] = round(p180 * 0.750063755419211);
+      }
     }
-    Serial.println();
+
+    //вывод массивов в компорт для отладки
+//    for (byte i = 0; i < 16; i++) {
+//      if (i == 0) Serial.print ("Temp data: ");
+//      Serial.print(String(tempAvgData[i]));
+//      if (i == 15) Serial.println();
+//    }
+
+
+    for (byte a = 0; a < 16; a++) {
+      if (a == 0) Serial.print ("Pressure data: ");
+      Serial.print(String(pressData[a]));
+      if (a == 15) Serial.println();
+    }
+    //конец вывода массивов в компорт для отладки
+
   }
 
   switch (screenMode) {
@@ -527,7 +547,7 @@ void setup() {
   lcd.init();
   lcd.backlight();
 
-  Serial.begin(9600); //серийный порт для отладки
+  Serial.begin(19200); //серийный порт для отладки
 
   lcdShowSensor[0] = true; //средняя тепература (0)
   lcdShowSensor[1] = false;//температура DHT22  (1)
