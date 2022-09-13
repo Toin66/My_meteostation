@@ -64,7 +64,7 @@ void GetMeteoData() { //опрос датчиков
     }
   }
 
-  if (millis() - getPressTimer > getDataInt)  // занесение данных барометра в таблицу
+  if ((millis() - getPressTimer > writeDataInt) || (tempAvgData[15] == 0)) // занесение данных барометра в таблицу
   {
     getPressTimer = millis();
 
@@ -98,11 +98,18 @@ void GetMeteoData() { //опрос датчиков
     //    }
 
 
-    for (byte a = 0; a < 16; a++) {
-      if (a == 0) Serial.print ("Pressure data: ");
-      Serial.print(pressData[a] + pressureAdd);
-      if (a == 15) Serial.println();
-    }
+    //    for (byte a = 0; a < 16; a++) {
+    //      if (a == 0) Serial.print ("Pressure data: ");
+    //      Serial.print(pressData[a] + pressureAdd);
+    //      if (a == 15) Serial.println();
+    //    }
+
+    Serial.print("Temp data: ");
+    Serial.print(tempAvgData[15]);
+    Serial.println();
+    Serial.print("Pressure data: ");
+    Serial.print(pressData[15]);
+    Serial.println();
     //конец вывода массивов в компорт для отладки
 
   }
@@ -210,7 +217,7 @@ void lcdDraw() { // отрисовка меню
 
     case 16:
       // lcdDraw("   Graf Temp", "^ ___---___--- v" );
-      lcdDraw("   Graf Temp:", String(tempAvgData[12]) + " " + String(tempAvgData[13]) + " " + String(tempAvgData[14]) + " " + String(tempAvgData[15]));
+      lcdDraw("   Graf Temp:", String(tempAvgData[11]) + " " + String(tempAvgData[12]) + " " + String(tempAvgData[13]) + " " + String(tempAvgData[14]) + " " + String(tempAvgData[15]));
       break;
 
     case 17:
