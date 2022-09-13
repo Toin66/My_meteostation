@@ -10,6 +10,7 @@
 #define lcdRefInt 5000 // интервал переключения между выводом значений датчиов
 #define getDataInt 10000 //интервал опроса датчиков
 #define writeDataInt 1800000 // интервал записи значений датчиков давления и температуры 10000 - 10сек, 1800000 - 30мин
+#define pressureAdd 600 //добваление к давлению
 #define fwVersion "v. 0.0.1.1"
 
 DHT dht22(dht22Pin, DHT22);
@@ -23,7 +24,7 @@ unsigned long lcdRefTimer; //переменная для часов
 unsigned long getPressTimer; //переменная для таймера записи значений датчиков давления и температуры
 boolean lcdShowSensor[sensorsCount];  //показ значений датчиков
 byte tempAvgData[16] {0};  //значения для графика датчика температуры
-word pressData[16] {0};  //значения для графика датчика температуры
+byte pressData[16] {0};  //значения для графика датчика температуры
 byte screenMode; //текущий режим экрана
 
 void GetMeteoData() { //опрос датчиков
@@ -85,21 +86,21 @@ void GetMeteoData() { //опрос датчиков
       }
       if (i == 15) {
         tempAvgData[i] = round((t22 + t180) * 0.5);
-        pressData[i] = round(p180 * 0.750063755419211);
+        pressData[i] = round((p180 * 0.750063755419211) - pressureAdd);
       }
     }
 
     //вывод массивов в компорт для отладки
-//    for (byte i = 0; i < 16; i++) {
-//      if (i == 0) Serial.print ("Temp data: ");
-//      Serial.print(String(tempAvgData[i]));
-//      if (i == 15) Serial.println();
-//    }
+    //    for (byte i = 0; i < 16; i++) {
+    //      if (i == 0) Serial.print ("Temp data: ");
+    //      Serial.print(tempAvgData[i]);
+    //      if (i == 15) Serial.println();
+    //    }
 
 
     for (byte a = 0; a < 16; a++) {
       if (a == 0) Serial.print ("Pressure data: ");
-      Serial.print(String(pressData[a]));
+      Serial.print(pressData[a] + pressureAdd);
       if (a == 15) Serial.println();
     }
     //конец вывода массивов в компорт для отладки
@@ -208,12 +209,13 @@ void lcdDraw() { // отрисовка меню
       break;
 
     case 16:
-      lcdDraw("   Graf Temp", "^ ___---___--- v" );
+      // lcdDraw("   Graf Temp", "^ ___---___--- v" );
+      lcdDraw("   Graf Temp:", String(tempAvgData[12]) + " " + String(tempAvgData[13]) + " " + String(tempAvgData[14]) + " " + String(tempAvgData[15]));
       break;
 
     case 17:
       // lcdDraw("   Graf Press", "^ ___---___--- v" );
-      lcdDraw("   Graf Press", String(pressData[12]) + " " + String(pressData[13]) + " " + String(pressData[14]) + " " + String(pressData[15]));
+      lcdDraw("   Graf Press:", String(pressData[12] + pressureAdd) + " " + String(pressData[13] + pressureAdd) + " " + String(pressData[14] + pressureAdd) + " " + String(pressData[15] + pressureAdd));
       break;
 
     case 20:
@@ -547,7 +549,7 @@ void setup() {
   lcd.init();
   lcd.backlight();
 
-  Serial.begin(19200); //серийный порт для отладки
+  Serial.begin(9600); //серийный порт для отладки
 
   lcdShowSensor[0] = true; //средняя тепература (0)
   lcdShowSensor[1] = false;//температура DHT22  (1)
