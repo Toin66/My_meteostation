@@ -226,11 +226,11 @@ void lcdDraw() { // отрисовка меню
       break;
 
     case 18:
-      lcdDraw("    Log Temp:", String(tempAvgData[11]) + " " + String(tempAvgData[12]) + " " + String(tempAvgData[13]) + " " + String(tempAvgData[14]) + " " + String(tempAvgData[15]));
+      lcdDraw("    Log Temp:", String(tempAvgData[7]) + " " + String(tempAvgData[9]) + " " + String(tempAvgData[11]) + " " + String(tempAvgData[13]) + " " + String(tempAvgData[15])); //интервал в 1 час
       break;
 
     case 19:
-      lcdDraw("    Log Press:", String(pressData[12] + pressureAdd) + " " + String(pressData[13] + pressureAdd) + " " + String(pressData[14] + pressureAdd) + " " + String(pressData[15] + pressureAdd));
+      lcdDraw("    Log Press:", String(pressData[9] + pressureAdd) + " " + String(pressData[11] + pressureAdd) + " " + String(pressData[13] + pressureAdd) + " " + String(pressData[15] + pressureAdd));  //интервал в 1 час
       break;
 
     case 20:
