@@ -10,7 +10,7 @@
 #define lcdRefInt 5000 // интервал переключения между выводом значений датчиов
 #define getDataInt 10000 //интервал опроса датчиков
 #define writeDataInt 1800000 // интервал записи значений датчиков давления и температуры 10000 - 10сек, 1800000 - 30мин
-#define pressureAdd 600 //добваление к давлению
+#define pressureAdd 650 //добавление к давлению
 #define fwVersion "v. 0.0.1.1"
 
 DHT dht22(dht22Pin, DHT22);
@@ -20,7 +20,7 @@ decode_results results;
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 unsigned long getDataTimer; //переменная для часов
-unsigned long lcdRefTimer; //переменная для часов
+//unsigned long lcdRefTimer; //переменная для часов <-перенести в локальные переменные
 unsigned long getPressTimer; //переменная для таймера записи значений датчиков давления и температуры
 boolean lcdShowSensor[sensorsCount];  //показ значений датчиков
 byte tempAvgData[16] {0};  //значения для графика датчика температуры
@@ -37,7 +37,7 @@ void GetMeteoData() { //опрос датчиков
   char status;
   byte enabledSensorsCount = 0; //кол-во отображаемых сенсоров
   byte tmpVal = 0;
-  lcdRefTimer = millis();
+  unsigned long lcdRefTimer = millis();
 
   for (byte i = 0; i < sensorsCount; i++) { //рассчет кол-ва элементов для обзора
     if (lcdShowSensor[i])
@@ -108,10 +108,10 @@ void GetMeteoData() { //опрос датчиков
     //      if (a == i) Serial.println();
     //    }
 
-    Serial.print("Temp data: " + String(tempAvgData[15]));
-    Serial.println();
-    Serial.print("Pressure data: " + String(pressData[15] + pressureAdd));
-    Serial.println();
+    //    Serial.print("Temp data: " + String(tempAvgData[15]));
+    //    Serial.println();
+    //    Serial.print("Pressure data: " + String(pressData[15] + pressureAdd));
+    //    Serial.println();
     //конец вывода массивов в компорт для отладки
 
   }
@@ -218,13 +218,19 @@ void lcdDraw() { // отрисовка меню
       break;
 
     case 16:
-      // lcdDraw("   Graf Temp", "^ ___---___--- v" );
-      lcdDraw("   Graf Temp:", String(tempAvgData[11]) + " " + String(tempAvgData[12]) + " " + String(tempAvgData[13]) + " " + String(tempAvgData[14]) + " " + String(tempAvgData[15]));
+      lcdDraw("   Graf Temp", "^ ___---___--- v" );
       break;
 
     case 17:
-      // lcdDraw("   Graf Press", "^ ___---___--- v" );
-      lcdDraw("   Graf Press:", String(pressData[12] + pressureAdd) + " " + String(pressData[13] + pressureAdd) + " " + String(pressData[14] + pressureAdd) + " " + String(pressData[15] + pressureAdd));
+      lcdDraw("   Graf Press", "^ ___---___--- v" );
+      break;
+
+    case 18:
+      lcdDraw("    Log Temp:", String(tempAvgData[11]) + " " + String(tempAvgData[12]) + " " + String(tempAvgData[13]) + " " + String(tempAvgData[14]) + " " + String(tempAvgData[15]));
+      break;
+
+    case 19:
+      lcdDraw("    Log Press:", String(pressData[12] + pressureAdd) + " " + String(pressData[13] + pressureAdd) + " " + String(pressData[14] + pressureAdd) + " " + String(pressData[15] + pressureAdd));
       break;
 
     case 20:
@@ -344,7 +350,7 @@ void irProcessing() { //обработка нажатий пульта
 
     case 0xFFB04F: //#
       screenMode = 0;
-      lcdDraw();
+      lcdDraw();  //<-проверить
       break;
 
     case 0xFF38C7: //OK
@@ -434,7 +440,7 @@ void irProcessing() { //обработка нажатий пульта
           break;
 
         case 11:
-          screenMode = 17;
+          screenMode = 19;
           lcdDraw();
           break;
 
@@ -447,8 +453,9 @@ void irProcessing() { //обработка нажатий пульта
           GetMeteoData();
           break;
 
-
         case 17:
+        case 18:
+        case 19:
           screenMode--;
           lcdDraw();
           break;
@@ -488,11 +495,13 @@ void irProcessing() { //обработка нажатий пульта
 
         case 15:
         case 16:
+        case 17:
+        case 18:
           screenMode++;
           lcdDraw();
           break;
 
-        case 17:
+        case 19:
           screenMode = 11;
           GetMeteoData();
           break;
