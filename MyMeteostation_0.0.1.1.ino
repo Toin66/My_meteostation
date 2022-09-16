@@ -11,7 +11,12 @@
 #define getDataInt 10000 //интервал опроса датчиков
 #define writeDataInt 1800000 // интервал записи значений датчиков давления и температуры 10000 - 10сек, 1800000 - 30мин
 #define pressureAdd 650 //добавление к давлению
-#define fwVersion "v. 0.0.1.1"
+#define fwVersion "v. 0.0.1.1A"
+
+//надписи меню
+//#define
+//надписи меню
+
 
 DHT dht22(dht22Pin, DHT22);
 IRrecv irrecv(irPin);
@@ -30,6 +35,7 @@ byte screenMode; //текущий режим экрана
 void GetMeteoData() { //опрос датчиков
   float h22 = dht22.readHumidity();
   float t22 = dht22.readTemperature();
+  unsigned long lcdRefTimer = millis();
 
   double t180, p180;
   int p180mm;
@@ -37,7 +43,6 @@ void GetMeteoData() { //опрос датчиков
   char status;
   byte enabledSensorsCount = 0; //кол-во отображаемых сенсоров
   byte tmpVal = 0;
-  unsigned long lcdRefTimer = millis();
 
   for (byte i = 0; i < sensorsCount; i++) { //рассчет кол-ва элементов для обзора
     if (lcdShowSensor[i])
@@ -124,28 +129,28 @@ void GetMeteoData() { //опрос датчиков
         switch (scrollSensors[i]) {
 
           case 0: //средняя температура
-            string1 = String("Temperature avg.");
-            string2 = String((t22 + t180) * 0.5, 0)  + String(" *C");
+            string1 = String(F("Temperature avg."));
+            string2 = String((t22 + t180) * 0.5, 0)  + String(F(" *C"));
             break;
 
           case 1: //температура с DHT22
-            string1 = String("Temp. 1 (DHT22)");
-            string2 = String(t22)  + String(" *C");
+            string1 = String(F("Temp. 1 (DHT22)"));
+            string2 = String(t22, 0)  + String(" *C");
             break;
 
           case 2: //влажность с DHT22
-            string1 = String("Humidity");
-            string2 = String(h22, 0)  + String("%");
+            string1 = String(F("Humidity"));
+            string2 = String(h22, 0)  + String(F("%"));
             break;
 
           case 3: // температура с Bmp180
-            string1 = String("Temp. 2 (BMP180)");
-            string2 = String(t180, 0)  + String(" *C");
+            string1 = String(F("Temp. 2 (BMP180)"));
+            string2 = String(t180, 0)  + String(F(" *C"));
             break;
 
           case 4: //Давление абсолют с Bmp180
-            string1 = String("Pressure abs.");
-            string2 = String(p180mm) + String(" mm.hg.st.");
+            string1 = String(F("Pressure abs."));
+            string2 = String(p180mm) + String(F(" mm.hg.st."));
             break;
         }
 
@@ -164,33 +169,33 @@ void GetMeteoData() { //опрос датчиков
 
       break;
 
-    case 11:
-      string1 = String("View temp. avg");
-      string2 = String((t22 + t180) * 0.5, 0)  + String(" *C");
+    case 11:  //меню просмотра значений
+      string1 = String(F("View temp. avg"));
+      string2 = String((t22 + t180) * 0.5, 0)  + String(F(" *C"));
       lcdDraw(string1, string2);
       break;
 
     case 12:
-      string1 = String("View temp.DHT22");
-      string2 = String(t22)  + String(" *C");
+      string1 = String(F("View temp.DHT22"));
+      string2 = String(t22, 0)  + String(F(" *C"));
       lcdDraw(string1, string2);
       break;
 
     case 13:
-      string1 = String("View humidity");
-      string2 = String(h22)  + String("%");
+      string1 = String(F("View humidity"));
+      string2 = String(h22, 0)  + String(F("%"));
       lcdDraw(string1, string2);
       break;
 
     case 14:
-      string1 = String("View temp.BMP180");
-      string2 = String(t180, 0)  + String(" *C");
+      string1 = String(F("View temp.BMP180"));
+      string2 = String(t180, 0)  + String(F(" *C"));
       lcdDraw(string1, string2);
       break;
 
     case 15:
-      string1 = String("View pressure abs.");
-      string2 = String(p180mm) + String(" mm.hg.st.");
+      string1 = String(F("View pressure abs."));
+      string2 = String(p180mm) + String(F(" mm.hg.st."));
       lcdDraw(string1, string2);
       break;
 
@@ -210,70 +215,88 @@ void lcdDraw() { // отрисовка меню
   switch (screenMode) {
 
     case 0:
-      lcdDraw("exit menu", " ");
+      lcdDraw(F("exit menu"), " ");
       break;
 
     case 10:
-      lcdDraw("      MENU", "^    Review    v" );
+      lcdDraw(F("      MENU"), F("^    Review    v") );
       break;
 
     case 16:
-      lcdDraw("   Graf Temp", "^ ___---___--- v" );
+      if (tempAvgData[15] > tempAvgData[13])
+        lcdDraw(F("   Graf Temp"), F( "^    ___---    v" ));
+      if (tempAvgData[15] == tempAvgData[13])
+        lcdDraw(F("   Graf Temp"), F( "^    ------    v" ));
+      if (tempAvgData[15] < tempAvgData[13])
+        lcdDraw(F("   Graf Temp"), F( "^    ---___    v" ));
+
+      if (tempAvgData[14] == 0)
+        lcdDraw(F("   Graf Temp"), F( "^ not avalible v" ));
+      //lcdDraw("   Graf Temp", "^ ___---___--- v" ); // заглушка графика
       break;
 
     case 17:
-      lcdDraw("   Graf Press", "^ ___---___--- v" );
+      if (pressData[15] > pressData[13])
+        lcdDraw(F("   Graf Press"), F("^    ___---    v" ));
+      if (pressData[15] == pressData[13])
+        lcdDraw(F("   Graf Press"), F( "^    ------    v" ));
+      if (pressData[15] < pressData[13])
+        lcdDraw(F("   Graf Press"), F( "^    ---___    v" ));
+      if (pressData[14] == 0)
+        lcdDraw(F("   Graf Press"), F( "^ not avalible v" ));
+
+      //lcdDraw("   Graf Press", "^ ___---___--- v" ); // заглушка графика
       break;
 
     case 18:
-      lcdDraw("    Log Temp:", String(tempAvgData[7]) + " " + String(tempAvgData[9]) + " " + String(tempAvgData[11]) + " " + String(tempAvgData[13]) + " " + String(tempAvgData[15])); //интервал в 1 час
+      lcdDraw(F("    Log Temp:"), String(tempAvgData[7]) + " " + String(tempAvgData[9]) + " " + String(tempAvgData[11]) + " " + String(tempAvgData[13]) + " " + String(tempAvgData[15])); //интервал в 1 час
       break;
 
     case 19:
-      lcdDraw("    Log Press:", String(pressData[9] + pressureAdd) + " " + String(pressData[11] + pressureAdd) + " " + String(pressData[13] + pressureAdd) + " " + String(pressData[15] + pressureAdd));  //интервал в 1 час
+      lcdDraw(F("    Log Press:"), String(pressData[9] + pressureAdd) + " " + String(pressData[11] + pressureAdd) + " " + String(pressData[13] + pressureAdd) + " " + String(pressData[15] + pressureAdd));  //интервал в 1 час
       break;
 
     case 20:
-      lcdDraw("      MENU", "^   Settings   v" );
+      lcdDraw(F("      MENU"), F("^   Settings   v" ));
       break;
 
     case 21:
       if (lcdShowSensor[0])
-        lcdDraw("    Settings", "^ Temp. avg. * v");
+        lcdDraw(F("    Settings"), F( "^ Temp. avg. * v"));
       else
-        lcdDraw("    Settings", "^ Temp. avg.   v");
+        lcdDraw(F("    Settings"), F( "^ Temp. avg.   v"));
       break;
 
     case 22:
       if (lcdShowSensor[1])
-        lcdDraw("    Settings", "^ Temp.DHT22 * v");
+        lcdDraw(F("    Settings"), F( "^ Temp.DHT22 * v"));
       else
-        lcdDraw("    Settings", "^ Temp.DHT22   v");
+        lcdDraw(F("    Settings"), F( "^ Temp.DHT22   v"));
       break;
 
     case 23:
       if (lcdShowSensor[2])
-        lcdDraw("    Settings", "^ Humidity   * v");
+        lcdDraw(F("    Settings"), F( "^ Humidity   * v"));
       else
-        lcdDraw("    Settings", "^ Humidity     v");
+        lcdDraw(F("    Settings"), F( "^ Humidity     v"));
       break;
 
     case 24:
       if (lcdShowSensor[3])
-        lcdDraw("    Settings", "^ Temp.BP180 * v");
+        lcdDraw(F("    Settings"), F( "^ Temp.BP180 * v"));
       else
-        lcdDraw("    Settings", "^ Temp.BP180   v");
+        lcdDraw(F("    Settings"), F( "^ Temp.BP180   v"));
       break;
 
     case 25:
       if (lcdShowSensor[4])
-        lcdDraw("    Settings", "^ Press. abs.* v");
+        lcdDraw(F("    Settings"), F( "^ Press. abs.* v"));
       else
-        lcdDraw("    Settings", "^ Press. abs.  v");
+        lcdDraw(F("    Settings"), F( "^ Press. abs.  v"));
       break;
 
     case 26:
-      lcdDraw("Firmware version", fwVersion);
+      lcdDraw(F("Firmware version"), fwVersion);
       break;
 
   }
@@ -567,7 +590,7 @@ void setup() {
   lcd.init();
   lcd.backlight();
 
-  Serial.begin(9600); //серийный порт для отладки
+  //Serial.begin(9600); //серийный порт для отладки
 
   lcdShowSensor[0] = true; //средняя тепература (0)
   lcdShowSensor[1] = false;//температура DHT22  (1)
@@ -575,9 +598,9 @@ void setup() {
   lcdShowSensor[3] = false;//температура BMP180 (3)
   lcdShowSensor[4] = true; //давление абс       (4)
 
-  screenMode = 0; //режим экрана - 0 - основной список
+  screenMode = 0; //режим экрана - 0 - основной список, вывод по 1 значению
 
-  lcdDraw("My meteostation", fwVersion);
+  lcdDraw(F("My meteostation"), fwVersion);
 
   getPressTimer = millis();
   getDataTimer = millis();
@@ -593,6 +616,7 @@ void loop() {
   }
 
   if (irrecv.decode( &results )) {
+    // Serial.println( results.value, HEX ); // печатаем данные
     irProcessing();
     irrecv.resume();
   }
