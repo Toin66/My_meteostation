@@ -11,7 +11,7 @@
 #define getDataInt 10000 //интервал опроса датчиков
 #define writeDataInt 1800000 // интервал записи значений датчиков давления и температуры 10000 - 10сек, 1800000 - 30мин
 #define pressureAdd 650 //добавление к давлению
-#define fwVersion "v. 0.0.1.1A"
+#define fwVersion "v. 0.0.1.1b"
 
 //надписи меню
 //#define
@@ -105,18 +105,12 @@ void GetMeteoData() { //опрос датчиков
     //      Serial.print(tempAvgData[i]);
     //      if (i == 15) Serial.println();
     //    }
-
-
+    //
     //    for (byte i = 0; i < 16; i++) {
     //      if (i == 0) Serial.print ("Pressure data: ");
     //      Serial.print(pressData[i] + pressureAdd);
-    //      if (a == i) Serial.println();
+    //      if (i == 15) Serial.println();
     //    }
-
-    //    Serial.print("Temp data: " + String(tempAvgData[15]));
-    //    Serial.println();
-    //    Serial.print("Pressure data: " + String(pressData[15] + pressureAdd));
-    //    Serial.println();
     //конец вывода массивов в компорт для отладки
 
   }
@@ -194,7 +188,7 @@ void GetMeteoData() { //опрос датчиков
       break;
 
     case 15:
-      string1 = String(F("View pressure abs."));
+      string1 = String(F("View press. abs."));
       string2 = String(p180mm) + String(F(" mm.hg.st."));
       lcdDraw(string1, string2);
       break;
@@ -224,11 +218,11 @@ void lcdDraw() { // отрисовка меню
 
     case 16:
       if (tempAvgData[15] > tempAvgData[13])
-        lcdDraw(F("   Graf Temp"), F( "^    ___---    v" ));
+        lcdDraw(F("   Graf Temp"), F( "^  ___--- UP   v" ));
       if (tempAvgData[15] == tempAvgData[13])
         lcdDraw(F("   Graf Temp"), F( "^    ------    v" ));
       if (tempAvgData[15] < tempAvgData[13])
-        lcdDraw(F("   Graf Temp"), F( "^    ---___    v" ));
+        lcdDraw(F("   Graf Temp"), F( "^  ---___ DW   v" ));
 
       if (tempAvgData[14] == 0)
         lcdDraw(F("   Graf Temp"), F( "^ not avalible v" ));
@@ -237,11 +231,11 @@ void lcdDraw() { // отрисовка меню
 
     case 17:
       if (pressData[15] > pressData[13])
-        lcdDraw(F("   Graf Press"), F("^    ___---    v" ));
+        lcdDraw(F("   Graf Press"), F( "^  ___--- UP   v" ));
       if (pressData[15] == pressData[13])
         lcdDraw(F("   Graf Press"), F( "^    ------    v" ));
       if (pressData[15] < pressData[13])
-        lcdDraw(F("   Graf Press"), F( "^    ---___    v" ));
+        lcdDraw(F("   Graf Press"), F( "^  ---___ DW   v" ));
       if (pressData[14] == 0)
         lcdDraw(F("   Graf Press"), F( "^ not avalible v" ));
 
