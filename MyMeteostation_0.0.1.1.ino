@@ -223,9 +223,9 @@ void lcdDraw() { // отрисовка меню
         lcdDraw(F("   Graf Temp"), F( "^    ------    v" ));
       if (tempAvgData[15] < tempAvgData[13])
         lcdDraw(F("   Graf Temp"), F( "^  ---___ DW   v" ));
-
-      if (tempAvgData[14] == 0)
+      if (tempAvgData[13] == 0)
         lcdDraw(F("   Graf Temp"), F( "^ not avalible v" ));
+        
       //lcdDraw("   Graf Temp", "^ ___---___--- v" ); // заглушка графика
       break;
 
@@ -236,7 +236,7 @@ void lcdDraw() { // отрисовка меню
         lcdDraw(F("   Graf Press"), F( "^    ------    v" ));
       if (pressData[15] < pressData[13])
         lcdDraw(F("   Graf Press"), F( "^  ---___ DW   v" ));
-      if (pressData[14] == 0)
+      if (pressData[13] == 0)
         lcdDraw(F("   Graf Press"), F( "^ not avalible v" ));
 
       //lcdDraw("   Graf Press", "^ ___---___--- v" ); // заглушка графика
