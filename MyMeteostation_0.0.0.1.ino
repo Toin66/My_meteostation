@@ -9,7 +9,7 @@
 #define getDataInt 10000 //интервал опроса датчиков
 #define sensorsCount 5 //количество подключенных датчиков
 #define lcdRefInt 5000 // интервал переключения между выводом значений датчиов
-#define fwVersion "v. 0.0.0.1"
+#define fwVersion "v. 0.0.0.1a"
 
 DHT dht22(dht22Pin, DHT22);
 IRrecv irrecv(irPin);
@@ -67,28 +67,28 @@ void GetMeteoData() { //опрос датчиков
         switch (scrollSensors[i]) {
 
           case 0: //средняя температура
-            string1 = String("Temperature avg.");
-            string2 = String((t22 + t180) * 0.5, 2)  + String(" *C");
+            string1 = String(F("Temperature avg."));
+            string2 = String((t22 + t180) * 0.5, 2)  + String(F(" *C"));
             break;
 
           case 1: //температура с DHT22
-            string1 = String("Temp. 1 (DHT22)");
-            string2 = String(t22)  + String(" *C");
+            string1 = String(F("Temp. 1 (DHT22)"));
+            string2 = String(t22)  + String(F(" *C"));
             break;
 
           case 2: //влажность с DHT22
-            string1 = String("Humidity");
-            string2 = String(h22)  + String("%");
+            string1 = String(F("Humidity"));
+            string2 = String(h22)  + String(F("%"));
             break;
 
           case 3: // температура с Bmp180
-            string1 = String("Temp. 2 (BMP180)");
-            string2 = String(t180, 2)  + String(" *C");
+            string1 = String(F("Temp. 2 (BMP180)"));
+            string2 = String(t180, 2)  + String(F(" *C"));
             break;
 
           case 4: //Давление абсолют с Bmp180
-            string1 = String("Pressure abs.");
-            string2 = String(p180 * 0.750063755419211, 2) + String(" mm.hg.st.");
+            string1 = String(F("Pressure abs."));
+            string2 = String(p180 * 0.750063755419211, 2) + String(F(" mm.hg.st."));
             break;
         }
 
@@ -108,32 +108,32 @@ void GetMeteoData() { //опрос датчиков
       break;
 
     case 11:
-      string1 = String("View temp. avg");
-      string2 = String((t22 + t180) * 0.5, 2)  + String(" *C");
+      string1 = String(F("View temp. avg"));
+      string2 = String((t22 + t180) * 0.5, 2)  + String(F(" *C"));
       lcdDraw(string1, string2);
       break;
 
     case 12:
-      string1 = String("View temp.DHT22");
-      string2 = String(t22)  + String(" *C");
+      string1 = String(F("View temp.DHT22"));
+      string2 = String(t22)  + String(F(" *C"));
       lcdDraw(string1, string2);
       break;
 
     case 13:
-      string1 = String("View humidity");
-      string2 = String(h22)  + String("%");
+      string1 = String(F("View humidity"));
+      string2 = String(h22)  + String(F("%"));
       lcdDraw(string1, string2);
       break;
 
     case 14:
-      string1 = String("View temp.BMP180");
-      string2 = String(t180, 2)  + String(" *C");
+      string1 = String(F("View temp.BMP180"));
+      string2 = String(t180, 2)  + String(F(" *C"));
       lcdDraw(string1, string2);
       break;
 
     case 15:
-      string1 = String("View pressure abs.");
-      string2 = String(p180 * 0.750063755419211, 2) + String(" mm.hg.st.");
+      string1 = String(F("View pressure abs."));
+      string2 = String(p180 * 0.750063755419211, 2) + String(F(" mm.hg.st."));
       lcdDraw(string1, string2);
       break;
 
@@ -153,54 +153,54 @@ void lcdDraw() { // отрисовка меню
   switch (screenMode) {
 
     case 0:
-      lcdDraw("exit menu", " ");
+      lcdDraw(F("exit menu"), F(" "));
       break;
 
     case 10:
-      lcdDraw("      MENU", "^    Review    v" );
+      lcdDraw(F("      MENU"), F("^    Review    v") );
       break;
 
     case 20:
-      lcdDraw("      MENU", "^   Settings   v" );
+      lcdDraw(F("      MENU"), F("^   Settings   v" ));
       break;
 
     case 21:
       if (lcdShowSensor[0])
-        lcdDraw("    Settings", "^ Temp. avg. * v");
+        lcdDraw(F("    Settings"), F( "^ Temp. avg. * v"));
       else
-        lcdDraw("    Settings", "^ Temp. avg.   v");
+        lcdDraw(F("    Settings"), F("^ Temp. avg.   v"));
       break;
 
     case 22:
       if (lcdShowSensor[1])
-        lcdDraw("    Settings", "^ Temp.DHT22 * v");
+        lcdDraw(F("    Settings"), F( "^ Temp.DHT22 * v"));
       else
-        lcdDraw("    Settings", "^ Temp.DHT22   v");
+        lcdDraw(F("    Settings"), F( "^ Temp.DHT22   v"));
       break;
 
     case 23:
       if (lcdShowSensor[2])
-        lcdDraw("    Settings", "^ Humidity   * v");
+        lcdDraw(F("    Settings"), F( "^ Humidity   * v"));
       else
-        lcdDraw("    Settings", "^ Humidity     v");
+        lcdDraw(F("    Settings"), F( "^ Humidity     v"));
       break;
 
     case 24:
       if (lcdShowSensor[3])
-        lcdDraw("    Settings", "^ Temp.BP180 * v");
+        lcdDraw(F("    Settings"), F( "^ Temp.BP180 * v"));
       else
-        lcdDraw("    Settings", "^ Temp.BP180   v");
+        lcdDraw(F("    Settings"), F( "^ Temp.BP180   v"));
       break;
 
     case 25:
       if (lcdShowSensor[4])
-        lcdDraw("    Settings", "^ Press. abs.* v");
+        lcdDraw(F("    Settings"), F( "^ Press. abs.* v"));
       else
-        lcdDraw("    Settings", "^ Press. abs.  v");
+        lcdDraw(F("    Settings"), F( "^ Press. abs.  v"));
       break;
 
     case 26:
-      lcdDraw("Firmware version", fwVersion);
+      lcdDraw(F("Firmware version"), fwVersion);
       break;
 
   }
@@ -385,9 +385,9 @@ void irProcessing() { //обработка нажатий пульта
           break;
 
         case 22:
-        case 23:     
+        case 23:
         case 24:
-        case 25:  
+        case 25:
         case 26:
           screenMode--;
           lcdDraw();
@@ -486,7 +486,7 @@ void setup() {
 
   screenMode = 0; //режим экрана - 0 - основной список
 
-  lcdDraw("My meteostation", fwVersion);
+  lcdDraw(F("My meteostation"), fwVersion);
 }
 
 void loop() {
