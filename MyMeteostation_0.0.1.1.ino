@@ -9,9 +9,9 @@
 #define sensorsCount 5 //количество подключенных датчиков
 #define lcdRefInt 5000 // интервал переключения между выводом значений датчиов
 #define getDataInt 10000 //интервал опроса датчиков
-#define writeDataInt 1800000 // интервал записи значений датчиков давления и температуры 10000 - 10сек, 1800000 - 30мин
+#define writeDataInt 3600000 // интервал записи значений датчиков давления и температуры 10000 - 10сек, 1800000 - 30мин, 3600000 - 1ч
 #define pressureAdd 650 //добавление к давлению
-#define fwVersion "v. 0.0.1.1b"
+#define fwVersion "v. 0.0.1.1c"
 
 //надписи меню
 //#define
@@ -176,14 +176,14 @@ void GetMeteoData() { //опрос датчиков
       break;
 
     case 13:
-      string1 = String(F("View humidity"));
-      string2 = String(h22, 0)  + String(F("%"));
+      string1 = String(F("View temp.BMP180"));
+      string2 = String(t180, 0)  + String(F(" *C"));
       lcdDraw(string1, string2);
       break;
 
     case 14:
-      string1 = String(F("View temp.BMP180"));
-      string2 = String(t180, 0)  + String(F(" *C"));
+      string1 = String(F("View humidity"));
+      string2 = String(h22, 0)  + String(F("%"));
       lcdDraw(string1, string2);
       break;
 
@@ -225,11 +225,16 @@ void lcdDraw() { // отрисовка меню
         lcdDraw(F("   Graf Temp"), F( "^  ---___ DW   v" ));
       if (tempAvgData[13] == 0)
         lcdDraw(F("   Graf Temp"), F( "^ not avalible v" ));
-        
+
       //lcdDraw("   Graf Temp", "^ ___---___--- v" ); // заглушка графика
       break;
 
     case 17:
+      lcdDraw(F("    Log Temp:"), String(tempAvgData[7]) + " " + String(tempAvgData[9]) + " " + String(tempAvgData[11]) + " "
+              + String(tempAvgData[13]) + " " + String(tempAvgData[15])); //интервал в 1 час
+      break;
+
+    case 18:
       if (pressData[15] > pressData[13])
         lcdDraw(F("   Graf Press"), F( "^  ___--- UP   v" ));
       if (pressData[15] == pressData[13])
@@ -242,12 +247,12 @@ void lcdDraw() { // отрисовка меню
       //lcdDraw("   Graf Press", "^ ___---___--- v" ); // заглушка графика
       break;
 
-    case 18:
-      lcdDraw(F("    Log Temp:"), String(tempAvgData[7]) + " " + String(tempAvgData[9]) + " " + String(tempAvgData[11]) + " " + String(tempAvgData[13]) + " " + String(tempAvgData[15])); //интервал в 1 час
-      break;
-
     case 19:
-      lcdDraw(F("    Log Press:"), String(pressData[9] + pressureAdd) + " " + String(pressData[11] + pressureAdd) + " " + String(pressData[13] + pressureAdd) + " " + String(pressData[15] + pressureAdd));  //интервал в 1 час
+      //    lcdDraw(F("    Log Press:"), if (pressData[9] == 0) String("N/A)" else String(pressData[9] + pressureAdd) + " " + String(pressData[11] + pressureAdd) + " "
+      //           + String(pressData[13] + pressureAdd) + " " + String(pressData[15] + pressureAdd));  //интервал в 1 час
+
+      lcdDraw(F("    Log Press:"), String(pressData[9] + pressureAdd) + " " + String(pressData[11] + pressureAdd) + " "
+              + String(pressData[13] + pressureAdd) + " " + String(pressData[15] + pressureAdd));  //интервал в 1 час
       break;
 
     case 20:
@@ -584,7 +589,7 @@ void setup() {
   lcd.init();
   lcd.backlight();
 
-  //Serial.begin(9600); //серийный порт для отладки
+  // Serial.begin(9600); //серийный порт для отладки
 
   lcdShowSensor[0] = true; //средняя тепература (0)
   lcdShowSensor[1] = false;//температура DHT22  (1)
